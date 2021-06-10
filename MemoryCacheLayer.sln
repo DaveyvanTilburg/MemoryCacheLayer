@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31402.337
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemoryCacheLayer", "MemoryCacheLayer\MemoryCacheLayer.csproj", "{15877EDF-5C9A-4611-87D3-09019DA16526}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{15877EDF-5C9A-4611-87D3-09019DA16526}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15877EDF-5C9A-4611-87D3-09019DA16526}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15877EDF-5C9A-4611-87D3-09019DA16526}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15877EDF-5C9A-4611-87D3-09019DA16526}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2F5829D6-ABFB-4192-BF77-88E950BE7AD6}
+	EndGlobalSection
+EndGlobal
