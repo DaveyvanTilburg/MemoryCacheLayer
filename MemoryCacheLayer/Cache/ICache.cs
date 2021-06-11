@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
+﻿using System.Collections.Generic;
+using MemoryCacheLayer.Expressions;
 using MemoryCacheLayer.Sql;
 
 namespace MemoryCacheLayer.Cache
 {
-    public interface ICache<T> : ISqlDatabase<T> where T : IDatabaseItem<T>
+    public interface ICache<T> : ISqlDatabase<T> where T : class, IDatabaseItem<T>, new()
     {
-        IEnumerable<T> Get(params Expression<Func<T, bool>>[] expression);
+        IEnumerable<T> Where(params IExpression<T>[] expression);
+        T First(params IExpression<T>[] expressions);
     }
 }

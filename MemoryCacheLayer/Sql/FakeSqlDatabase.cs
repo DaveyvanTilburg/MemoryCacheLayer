@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace MemoryCacheLayer.Sql
 {
-    public class FakeSqlDatabase<T> : ISqlDatabase<T> where T : IDatabaseItem<T>
+    public class FakeSqlDatabase<T> : ISqlDatabase<T> where T : class, IDatabaseItem<T>, new()
     {
         private readonly List<T> _items;
 

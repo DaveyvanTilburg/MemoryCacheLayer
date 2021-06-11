@@ -1,6 +1,6 @@
 ﻿using MemoryCacheLayer.Sql;
 
-namespace MemoryCacheLayer
+namespace MemoryCacheLayer.Customers
 {
     public class Customer : IDatabaseItem<Customer>
     {
@@ -10,6 +10,10 @@ namespace MemoryCacheLayer
         private readonly string _location;
         private CustomerType _customerType;
 
+        public Customer() : this(0, "Unknown", "Unknown", "Unknown", Customers.CustomerType.Normal)
+        {
+        }
+
         public Customer(int id, string firstName, string lastName, string location, CustomerType customerType)
         {
             _id = id;
@@ -18,7 +22,6 @@ namespace MemoryCacheLayer
             _location = location;
             _customerType = customerType;
         }
-
 
         int IDatabaseItem<Customer>.Id()
             => _id;

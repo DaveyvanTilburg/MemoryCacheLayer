@@ -2,7 +2,7 @@
 
 namespace MemoryCacheLayer.Sql
 {
-    public interface ISqlDatabase<T> where T : IDatabaseItem<T>
+    public interface ISqlDatabase<T> where T : class, IDatabaseItem<T>, new()
     {
         void Save(T value);
 

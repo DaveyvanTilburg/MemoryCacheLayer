@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using MemoryCacheLayer.Cache;
+using MemoryCacheLayer.Customers;
+using MemoryCacheLayer.Customers.Expressions;
 using MemoryCacheLayer.Sql;
 using Xunit;
 
@@ -21,39 +24,46 @@ namespace MemoryCacheLayer
                 }
             );
 
-            var customerRepository = new CustomerRepository(
+            ICache<Customer> customerCache = new Cache<Customer>(
                 sqlDatabase
             );
 
-            List<Customer> result = customerRepository.By(
-                customerRepository.ByLocation("Gouda"),
-                customerRepository.ByName("Tilburg"),
-                customerRepository.ByType(CustomerType.Gold)
+            List<Customer> result = customerCache.Where(
+                new ByLocation("Gouda"),
+                new ByName("Tilburg"),
+                new ByCustomerType(CustomerType.Gold)
             ).ToList();
 
             result.Count.Should().Be(2);
             sqlDatabase.GetCount().Should().Be(1);
 
-            List<Customer> normals = customerRepository.By(
-                customerRepository.ByName("Test"),
-                customerRepository.ByType(CustomerType.Normal)
+            List<Customer> normals = customerCache.Where(
+                new ByName("Test"),
+                new ByCustomerType(CustomerType.Normal)
             ).ToList();
 
             normals.Count.Should().Be(99996);
             sqlDatabase.GetCount().Should().Be(1);
 
-            Customer davey = customerRepository.By(
-                customerRepository.ByName("Davey")
-            ).First();
+            Customer unknown = customerCache.First(
+                new ByName("YYY")
+            );
 
-            davey.Should().NotBe(null);
+            unknown.Should().NotBeNull();
+            unknown.Location().Should().Be("Unknown");
+
+            Customer davey = customerCache.First(
+                new ByName("Davey")
+            );
+
+            davey.Should().NotBeNull();
             sqlDatabase.GetCount().Should().Be(1);
 
-            customerRepository.Save(davey);
+            customerCache.Save(davey);
             sqlDatabase.SaveCount().Should().Be(0);
 
             davey.CustomerType(CustomerType.Normal);
-            customerRepository.Save(davey);
+            customerCache.Save(davey);
             sqlDatabase.SaveCount().Should().Be(1);
         }
 
