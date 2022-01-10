@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Caching;
-using MemoryCacheLayer.Expressions;
 using MemoryCacheLayer.Sql;
 
 namespace MemoryCacheLayer.Cache
@@ -41,22 +40,23 @@ namespace MemoryCacheLayer.Cache
 
         IEnumerable<T> ISqlDatabase<T>.Get()
             => List().Select(i => i.Clone());
-
-        IEnumerable<T> ICache<T>.Where(params IExpression<T>[] expressions)
-            => WhereLambda(expressions).Select(i => i.Clone());
-
-        T ICache<T>.First(params IExpression<T>[] expressions)
-            => WhereLambda(expressions).FirstOrDefault()?.Clone() ?? new T();
-
-        private IEnumerable<T> WhereLambda(params IExpression<T>[] expressions)
+        
+        IEnumerable<T> ICache<T>.Where(Func<IEnumerable<T>, IEnumerable<T>> filter)
         {
             List<T> items = List();
             IEnumerable<T> result = new List<T>(items);
-
-            foreach (IExpression<T> expression in expressions)
-                result = result.Where(expression.Lambda());
+            result = filter(result).Select(i => i.Clone());
 
             return result;
+        }
+
+        T ICache<T>.One(Func<IEnumerable<T>, T> filter)
+        {
+            List<T> items = List();
+            IEnumerable<T> sourceItems = new List<T>(items);
+            T result = filter(sourceItems);
+
+            return result?.Clone() ?? new T();
         }
 
         private List<T> List()

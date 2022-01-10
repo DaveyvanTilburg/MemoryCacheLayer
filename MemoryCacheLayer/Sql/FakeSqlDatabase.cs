@@ -1,18 +1,18 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 
 namespace MemoryCacheLayer.Sql
 {
     public class FakeSqlDatabase<T> : ISqlDatabase<T> where T : class, IDatabaseItem<T>, new()
     {
-        private readonly List<T> _items;
+        private readonly Func<IEnumerable<T>> _source;
 
         private int _saveCount;
         private int _getCount;
 
-        public FakeSqlDatabase(List<T> items)
+        public FakeSqlDatabase(Func<IEnumerable<T>> source)
         {
-            _items = items;
+            _source = source;
 
             _saveCount = 0;
             _getCount = 0;
@@ -21,20 +21,13 @@ namespace MemoryCacheLayer.Sql
         void ISqlDatabase<T>.Save(T value)
         {
             _saveCount++;
-
-            T item = _items.FirstOrDefault(i => i.Id().Equals(value.Id()));
-
-            if (item != null)
-                _items.Remove(item);
-
-            _items.Add(item);
         }
 
         IEnumerable<T> ISqlDatabase<T>.Get()
         {
             _getCount++;
 
-            return _items;
+            return _source();
         }
 
         public int SaveCount()
