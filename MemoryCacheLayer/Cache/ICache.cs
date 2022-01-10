@@ -6,7 +6,11 @@ namespace MemoryCacheLayer.Cache
 {
     public interface ICache<T> : ISqlDatabase<T> where T : class, IDatabaseItem<T>, new()
     {
+        IEnumerable<T> All();
+
         IEnumerable<T> Where(Func<IEnumerable<T>, IEnumerable<T>> filter);
         T One(Func<IEnumerable<T>, T> filter);
+        void Clear();
+        int InCacheCount();
     }
 }

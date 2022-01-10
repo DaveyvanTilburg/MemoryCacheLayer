@@ -35,5 +35,11 @@ namespace MemoryCacheLayer.Sql
 
         public int GetCount()
             => _getCount;
+
+        public void Reset()
+        {
+            _saveCount = 0;
+            _getCount = 0;
+        }
     }
 }

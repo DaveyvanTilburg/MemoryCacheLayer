@@ -40,7 +40,10 @@ namespace MemoryCacheLayer.Cache
 
         IEnumerable<T> ISqlDatabase<T>.Get()
             => List().Select(i => i.Clone());
-        
+
+        public IEnumerable<T> All()
+            => ((ISqlDatabase<T>)this).Get();
+
         IEnumerable<T> ICache<T>.Where(Func<IEnumerable<T>, IEnumerable<T>> filter)
         {
             List<T> items = List();
@@ -58,6 +61,12 @@ namespace MemoryCacheLayer.Cache
 
             return result?.Clone() ?? new T();
         }
+
+        void ICache<T>.Clear()
+            => _cache.Remove(CacheKey());
+
+        int ICache<T>.InCacheCount()
+            => ((List<T>)_cache.Get(CacheKey()))?.Count ?? 0;
 
         private List<T> List()
         {
