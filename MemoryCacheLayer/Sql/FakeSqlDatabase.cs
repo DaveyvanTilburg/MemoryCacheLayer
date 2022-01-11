@@ -1,33 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 
 namespace MemoryCacheLayer.Sql
 {
     public class FakeSqlDatabase<T> : ISqlDatabase<T> where T : class, IDatabaseItem<T>, new()
     {
-        private readonly Func<IEnumerable<T>> _source;
+        private readonly Dictionary<string, Func<IEnumerable<T>>> _sources;
 
         private int _saveCount;
         private int _getCount;
 
-        public FakeSqlDatabase(Func<IEnumerable<T>> source)
+        public FakeSqlDatabase(params (string, Func<IEnumerable<T>>)[] sources)
         {
-            _source = source;
+            _sources = sources.ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
 
             _saveCount = 0;
             _getCount = 0;
         }
 
-        void ISqlDatabase<T>.Save(T value)
+        void ISqlDatabase<T>.Save(string key, T value)
         {
             _saveCount++;
+
+            Thread.Sleep(100);
         }
 
-        IEnumerable<T> ISqlDatabase<T>.Get()
+        IEnumerable<T> ISqlDatabase<T>.Get(string key)
         {
             _getCount++;
 
-            return _source();
+            Thread.Sleep(500);
+
+            return _sources.ContainsKey(key) ? 
+                _sources[key]() : 
+                new List<T>();
         }
 
         public int SaveCount()

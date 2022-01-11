@@ -17,15 +17,15 @@ namespace MemoryCacheLayer.Cache
             _cache = MemoryCache.Default;
         }
 
-        public void Save(T value)
+        void ISqlDatabase<T>.Save(string key, T value)
         {
-            List<T> list = List();
+            List<T> list = List(key);
             T cachedItem = list.FirstOrDefault(i => i.Id() == value.Id());
 
             if (cachedItem == null)
             {
                 list.Add(value);
-                _sqlDatabase.Save(value);
+                _sqlDatabase.Save(key, value);
                 return;
             }
 
@@ -35,54 +35,51 @@ namespace MemoryCacheLayer.Cache
             list.Remove(cachedItem);
             list.Add(value);
 
-            _sqlDatabase.Save(value);
+            _sqlDatabase.Save(key, value);
         }
 
-        IEnumerable<T> ISqlDatabase<T>.Get()
-            => List().Select(i => i.Clone());
+        IEnumerable<T> ISqlDatabase<T>.Get(string key)
+            => List(key).Select(i => i.Clone());
 
-        public IEnumerable<T> All()
-            => ((ISqlDatabase<T>)this).Get();
-
-        IEnumerable<T> ICache<T>.Where(Func<IEnumerable<T>, IEnumerable<T>> filter)
+        IEnumerable<T> ICache<T>.Where(string key, Func<IEnumerable<T>, IEnumerable<T>> filter)
         {
-            List<T> items = List();
+            List<T> items = List(key);
             IEnumerable<T> result = new List<T>(items);
             result = filter(result).Select(i => i.Clone());
 
             return result;
         }
 
-        T ICache<T>.One(Func<IEnumerable<T>, T> filter)
+        T ICache<T>.One(string key, Func<IEnumerable<T>, T> filter)
         {
-            List<T> items = List();
+            List<T> items = List(key);
             IEnumerable<T> sourceItems = new List<T>(items);
             T result = filter(sourceItems);
 
             return result?.Clone() ?? new T();
         }
 
-        void ICache<T>.Clear()
-            => _cache.Remove(CacheKey());
+        void ICache<T>.Clear(string key)
+            => _cache.Remove(CacheKey(key));
 
-        int ICache<T>.InCacheCount()
-            => ((List<T>)_cache.Get(CacheKey()))?.Count ?? 0;
+        int ICache<T>.InCacheCount(string key)
+            => ((List<T>)_cache.Get(CacheKey(key)))?.Count ?? 0;
 
-        private List<T> List()
+        private List<T> List(string key)
         {
-            string cacheKey = CacheKey();
+            string cacheKey = CacheKey(key);
             List<T> source = (List<T>)_cache.Get(cacheKey);
 
             if (source != null)
                 return source;
 
-            source = _sqlDatabase.Get().ToList();
+            source = _sqlDatabase.Get(key).ToList();
             _cache.Add(cacheKey, source, DateTimeOffset.MaxValue);
 
             return source;
         }
 
-        private string CacheKey()
-            => $"ListOf({typeof(T).Name})";
+        private string CacheKey(string key)
+            => $"ListOf({typeof(T).Name})-Key({key})";
     }
 }
