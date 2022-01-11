@@ -73,6 +73,8 @@ namespace MemoryCacheLayer.WPF
             BorderMemory.BorderBrush = new SolidColorBrush(Color(1));
             BorderDatabase.BorderBrush = new SolidColorBrush(Color(_database.GetCount() + _database.SaveCount()));
             _database.Reset();
+            
+            LabelMemoryUsage.Content = FormatSize(GetUsedPhys());
         }
 
         private Color Color(int count)
@@ -125,6 +127,25 @@ namespace MemoryCacheLayer.WPF
             stopwatch.Stop();
 
             UpdateStats(stopwatch.Elapsed, 1, key);
+        }
+
+        public long GetUsedPhys()
+        {
+            Process proc = Process.GetCurrentProcess();
+            return proc.PrivateMemorySize64;
+        }
+
+        private string FormatSize(double size)
+        {
+            double d = size;
+            int i = 0;
+            while (d > 1024 && i < 5)
+            {
+                d /= 1024;
+                i++;
+            }
+            string[] unit = { "B", "KB", "MB", "GB", "TB" };
+            return $"{Math.Round(d, 2)} {unit[i]}";
         }
     }
 }
