@@ -1,9 +1,9 @@
 ﻿namespace MemoryCacheLayer.Sql
 {
-    public interface IDatabaseItem<T> where T : class, IDatabaseItem<T>, new()
+    public interface IDatabaseItem<out T> where T : struct, ICloneItem
     {
         int Id();
-        bool Equals(T other);
+        bool Equals(ICloneItem other);
         T Clone();
     }
 }

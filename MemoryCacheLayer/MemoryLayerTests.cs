@@ -16,8 +16,8 @@ namespace MemoryCacheLayer
         {
             string key = "Test";
 
-            var sqlDatabase = new FakeSqlDatabase<Customer>(
-                (key, () => new List<Customer>(GenerateRandoms())
+            var sqlDatabase = new FakeSqlDatabase<CustomerData, Customer>(
+                (key, () => new List<CustomerData>(GenerateRandoms())
                     {
                         new(1, "Davey", "Tilburg", "Gouda", new DateTime(1991, 9, 11), CustomerType.Gold),
                         new(2, "Joey", "Tilburg", "Gouda", new DateTime(1987, 9, 7), CustomerType.Gold),
@@ -27,16 +27,17 @@ namespace MemoryCacheLayer
                 )
             );
 
-            ICache<Customer> customerCache = new Cache<Customer>(
-                sqlDatabase
+            ICache<CustomerData, Customer> customerCache = new Cache<CustomerData, Customer>(
+                sqlDatabase,
+                clone => clone.CreateData()
             );
 
             List<Customer> result = customerCache.Where(
                 key,
                 items => items
-                    .Where(i => i.Location().Equals("Gouda") && 
-                                i.DisplayName().Contains("Tilburg") && 
-                                i.CustomerType() == CustomerType.Gold)
+                    .Where(i => i.LocationName.Equals("Gouda") && 
+                                i.LastName.Equals("Tilburg") && 
+                                i.CustomerType == CustomerType.Gold)
             ).ToList();
 
             result.Count.Should().Be(2);
@@ -45,8 +46,8 @@ namespace MemoryCacheLayer
             List<Customer> normals = customerCache.Where(
                 key,
             items => items.Where(i =>
-                    i.DisplayName().Contains("Test") &&
-                    i.CustomerType() == CustomerType.Normal
+                    i.FirstName.Contains("Test") &&
+                    i.CustomerType == CustomerType.Normal
                 )
             ).ToList();
 
@@ -55,16 +56,16 @@ namespace MemoryCacheLayer
 
             Customer unknown = customerCache.One(
                 key,
-                items => items.FirstOrDefault(i => i.DisplayName().Contains("YYY")
+                items => items.FirstOrDefault(i => i.FirstName.Contains("YYY")
                 )
             );
 
             unknown.Should().NotBeNull();
-            unknown.Location().Should().Be("Unknown");
+            unknown.LocationName().Should().Be("Unknown");
 
             Customer davey = customerCache.One(
                 key,
-                items => items.First(i => i.DisplayName().Contains("Davey"))
+                items => items.First(i => i.FirstName.Contains("Davey"))
             );
 
             davey.Should().NotBeNull();
@@ -78,10 +79,10 @@ namespace MemoryCacheLayer
             sqlDatabase.SaveCount().Should().Be(1);
         }
 
-        private IEnumerable<Customer> GenerateRandoms()
+        private IEnumerable<CustomerData> GenerateRandoms()
         {
             for (int i = 5; i <= 100000; i++)
-                yield return new Customer(i, $"Test{i}", $"Test{i}", $"Test{i}", new DateTime(1900, 1, 1).AddYears(i % 1000), CustomerType.Normal);
+                yield return new CustomerData(i, $"Test{i}", $"Test{i}", $"Test{i}", new DateTime(1900, 1, 1).AddYears(i % 1000), CustomerType.Normal);
         }
     }
 }
