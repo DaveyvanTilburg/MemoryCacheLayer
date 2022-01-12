@@ -34,6 +34,12 @@ namespace MemoryCacheLayer.WPF
             );
         }
 
+        private static IEnumerable<CustomerData> MockDatabaseSet(int startIndex, int range)
+        {
+            for (int i = startIndex; i < range; i++)
+                yield return new CustomerData(i, $"Test{i}", $"Test{i}", $"Test{i}", new DateTime(1900, 1, 1).AddYears(i % 1000), i % 50 == 0 ? CustomerType.Gold : CustomerType.Normal);
+        }
+
         private void BtnGo_OnClick(object sender, RoutedEventArgs e)
         {
             int.TryParse(TxtYear.Text, out int year);
@@ -64,28 +70,6 @@ namespace MemoryCacheLayer.WPF
             _cache.Clear(key);
 
             UpdateStats(new TimeSpan(0), 0, key);
-        }
-
-        private void UpdateStats(TimeSpan timeElapsed, int resultCount, string key)
-        {
-            LabelResultCount.Content = $"Result count: {resultCount}";
-            LabelTimeElapsed.Content = $"Time elapsed: {timeElapsed:mm':'ss':'ffffff}";
-            LabelCacheCount.Content = $"Cached count: {_cache.InCacheCount(key)}";
-
-            BorderMemory.BorderBrush = new SolidColorBrush(Color(1));
-            BorderDatabase.BorderBrush = new SolidColorBrush(Color(_database.CallCount() + _database.CallCount()));
-            _database.Reset();
-
-            LabelMemoryUsage.Content = FormatSize(GetUsedPhys());
-        }
-
-        private Color Color(int count)
-            => count == 0 ? Colors.Red : Colors.ForestGreen;
-
-        private static IEnumerable<CustomerData> MockDatabaseSet(int startIndex, int range)
-        {
-            for (int i = startIndex; i < range; i++)
-                yield return new CustomerData(i, $"Test{i}", $"Test{i}", $"Test{i}", new DateTime(1900, 1, 1).AddYears(i % 1000), i % 50 == 0 ? CustomerType.Gold : CustomerType.Normal);
         }
 
         private void BtnGetById_OnClick(object sender, RoutedEventArgs e)
@@ -131,6 +115,34 @@ namespace MemoryCacheLayer.WPF
             UpdateStats(stopwatch.Elapsed, 1, key);
         }
         
+        private void BtnDelete_OnClick(object sender, RoutedEventArgs e)
+        {
+            string key = TxtKey.Text;
+            int.TryParse(TxtGetId.Text, out int id);
+
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            _cache.Delete(key, id);
+            stopwatch.Stop();
+
+            UpdateStats(stopwatch.Elapsed, 1, key);
+        }
+
+        private void UpdateStats(TimeSpan timeElapsed, int resultCount, string key)
+        {
+            LabelResultCount.Content = $"Result count: {resultCount}";
+            LabelTimeElapsed.Content = $"Time elapsed: {timeElapsed:mm':'ss':'ffffff}";
+            LabelCacheCount.Content = $"Cached count: {_cache.InCacheCount(key)}";
+
+            BorderMemory.BorderBrush = new SolidColorBrush(Color(1));
+            BorderDatabase.BorderBrush = new SolidColorBrush(Color(_database.CallCount() + _database.CallCount()));
+            _database.Reset();
+
+            LabelMemoryUsage.Content = FormatSize(GetUsedPhys());
+        }
+
+        private Color Color(int count)
+            => count == 0 ? Colors.Red : Colors.ForestGreen;
+
         public long GetUsedPhys()
         {
             Process proc = Process.GetCurrentProcess();
@@ -148,18 +160,6 @@ namespace MemoryCacheLayer.WPF
             }
             string[] unit = { "B", "KB", "MB", "GB", "TB" };
             return $"{Math.Round(d, 2)} {unit[i]}";
-        }
-
-        private void BtnDelete_OnClick(object sender, RoutedEventArgs e)
-        {
-            string key = TxtKey.Text;
-            int.TryParse(TxtGetId.Text, out int id);
-
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            _cache.Delete(key, id);
-            stopwatch.Stop();
-
-            UpdateStats(stopwatch.Elapsed, 1, key);
         }
     }
 }
