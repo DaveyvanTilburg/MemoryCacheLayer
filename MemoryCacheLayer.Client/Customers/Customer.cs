@@ -1,7 +1,6 @@
-﻿using System;
-using MemoryCacheLayer.Sql;
+﻿using MemoryCacheLayer.Domain.Repository;
 
-namespace MemoryCacheLayer.Customers
+namespace MemoryCacheLayer.Client.Customers
 {
     public struct Customer : ICloneItem
     {

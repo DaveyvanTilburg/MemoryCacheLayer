@@ -1,4 +1,4 @@
-﻿namespace MemoryCacheLayer.Customers
+﻿namespace MemoryCacheLayer.Client.Customers
 {
     public enum CustomerType
     {

@@ -4,32 +4,33 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
-using MemoryCacheLayer.Cache;
-using MemoryCacheLayer.Customers;
-using MemoryCacheLayer.Sql;
+using MemoryCacheLayer.Client.Customers;
+using MemoryCacheLayer.Client.Repository;
+using MemoryCacheLayer.Domain.Cache;
 
 namespace MemoryCacheLayer.WPF
 {
     public partial class MainWindow : Window
     {
-        private readonly FakeSqlDatabase<CustomerData, Customer> _database;
-        private readonly ICache<CustomerData, Customer> _cache;
+        private readonly FakeRepository<CustomerData> _database;
+        private readonly ICachedRepository<CustomerData, Customer> _cache;
 
         public MainWindow()
         {
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
             InitializeComponent();
 
-            _database = new FakeSqlDatabase<CustomerData, Customer>(
+            _database = new FakeRepository<CustomerData>(
                 ("0", () => MockDatabaseSet(0, 100000)),
                 ("1", () => MockDatabaseSet(0, 2000)),
                 ("2", () => MockDatabaseSet(0, 800)),
                 ("3", () => MockDatabaseSet(0, 50000))
 
             );
-            _cache = new Cache<CustomerData, Customer>(
+            _cache = new CachedRepository<CustomerData, Customer>(
                 _database,
-                clone => clone.CreateData()
+                clone => clone.CreateData(),
+                () => new Customer(0, "Unknown", "Unknown", "Unknown", DateTime.MinValue, CustomerType.Normal)
             );
         }
 
@@ -72,7 +73,7 @@ namespace MemoryCacheLayer.WPF
             LabelCacheCount.Content = $"Cached count: {_cache.InCacheCount(key)}";
 
             BorderMemory.BorderBrush = new SolidColorBrush(Color(1));
-            BorderDatabase.BorderBrush = new SolidColorBrush(Color(_database.GetCount() + _database.SaveCount()));
+            BorderDatabase.BorderBrush = new SolidColorBrush(Color(_database.CallCount() + _database.CallCount()));
             _database.Reset();
 
             LabelMemoryUsage.Content = FormatSize(GetUsedPhys());
@@ -124,7 +125,7 @@ namespace MemoryCacheLayer.WPF
             );
 
             Stopwatch stopwatch = Stopwatch.StartNew();
-            _cache.Save(key, customerData);
+            _cache.Upsert(key, customerData);
             stopwatch.Stop();
 
             UpdateStats(stopwatch.Elapsed, 1, key);
@@ -147,6 +148,18 @@ namespace MemoryCacheLayer.WPF
             }
             string[] unit = { "B", "KB", "MB", "GB", "TB" };
             return $"{Math.Round(d, 2)} {unit[i]}";
+        }
+
+        private void BtnDelete_OnClick(object sender, RoutedEventArgs e)
+        {
+            string key = TxtKey.Text;
+            int.TryParse(TxtGetId.Text, out int id);
+
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            _cache.Delete(key, id);
+            stopwatch.Stop();
+
+            UpdateStats(stopwatch.Elapsed, 1, key);
         }
     }
 }

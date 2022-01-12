@@ -1,9 +1,8 @@
-﻿using System;
-using MemoryCacheLayer.Sql;
+﻿using MemoryCacheLayer.Domain.Repository;
 
-namespace MemoryCacheLayer.Customers
+namespace MemoryCacheLayer.Client.Customers
 {
-    public class CustomerData : IDatabaseItem<Customer>
+    public class CustomerData : IRepositoryItem<Customer>
     {
         public int Id { get; set; }
         public string FirstName { get; set; }
@@ -26,16 +25,16 @@ namespace MemoryCacheLayer.Customers
             CustomerType = customerType;
         }
 
-        int IDatabaseItem<Customer>.Id()
+        int IRepositoryItem<Customer>.Id()
             => Id;
 
-        bool IDatabaseItem<Customer>.Equals(ICloneItem other)
+        bool IRepositoryItem<Customer>.Equals(ICloneItem other)
             => other.Hash().Equals(Hash());
 
         private string Hash()
             => $"{Id}_{FirstName}_{LastName}_{LocationName}_{BirthDate}_{CustomerType}";
 
-        Customer IDatabaseItem<Customer>.Clone() 
+        Customer IRepositoryItem<Customer>.Clone() 
             => new(Id, FirstName, LastName, LocationName, BirthDate, CustomerType);
     }
 }

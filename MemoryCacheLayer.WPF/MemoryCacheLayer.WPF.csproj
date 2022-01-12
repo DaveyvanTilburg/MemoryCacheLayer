@@ -22,7 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MemoryCacheLayer\MemoryCacheLayer.csproj" />
+    <ProjectReference Include="..\MemoryCacheLayer.Client\MemoryCacheLayer.Client.csproj" />
+    <ProjectReference Include="..\MemoryCacheLayer.Domain\MemoryCacheLayer.Domain.csproj" />
   </ItemGroup>
 
 </Project>

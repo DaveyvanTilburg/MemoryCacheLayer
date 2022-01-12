@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using FluentAssertions;
-using MemoryCacheLayer.Cache;
-using MemoryCacheLayer.Customers;
-using MemoryCacheLayer.Sql;
+﻿using FluentAssertions;
+using MemoryCacheLayer.Client.Customers;
+using MemoryCacheLayer.Client.Repository;
+using MemoryCacheLayer.Domain.Cache;
 using Xunit;
 
-namespace MemoryCacheLayer
+namespace MemoryCacheLayer.UnitTests
 {
     public class MemoryLayerTests
     {
@@ -16,7 +13,7 @@ namespace MemoryCacheLayer
         {
             string key = "Test";
 
-            var sqlDatabase = new FakeSqlDatabase<CustomerData, Customer>(
+            var sqlDatabase = new FakeRepository<CustomerData>(
                 (key, () => new List<CustomerData>(GenerateRandoms())
                     {
                         new(1, "Davey", "Tilburg", "Gouda", new DateTime(1991, 9, 11), CustomerType.Gold),
@@ -27,9 +24,10 @@ namespace MemoryCacheLayer
                 )
             );
 
-            ICache<CustomerData, Customer> customerCache = new Cache<CustomerData, Customer>(
+            ICachedRepository<CustomerData, Customer> customerCache = new CachedRepository<CustomerData, Customer>(
                 sqlDatabase,
-                clone => clone.CreateData()
+                clone => clone.CreateData(),
+                () => new Customer(0, "Unknown", "Unknown", "Unknown", DateTime.MinValue, CustomerType.Normal)
             );
 
             List<Customer> result = customerCache.Where(
@@ -41,7 +39,7 @@ namespace MemoryCacheLayer
             ).ToList();
 
             result.Count.Should().Be(2);
-            sqlDatabase.GetCount().Should().Be(1);
+            sqlDatabase.CallCount().Should().Be(1);
 
             List<Customer> normals = customerCache.Where(
                 key,
@@ -52,7 +50,7 @@ namespace MemoryCacheLayer
             ).ToList();
 
             normals.Count.Should().Be(99996);
-            sqlDatabase.GetCount().Should().Be(1);
+            sqlDatabase.CallCount().Should().Be(1);
 
             Customer unknown = customerCache.One(
                 key,
@@ -69,14 +67,14 @@ namespace MemoryCacheLayer
             );
 
             davey.Should().NotBeNull();
-            sqlDatabase.GetCount().Should().Be(1);
+            sqlDatabase.CallCount().Should().Be(1);
 
-            customerCache.Save(key, davey);
-            sqlDatabase.SaveCount().Should().Be(0);
+            customerCache.Upsert(key, davey);
+            sqlDatabase.CallCount().Should().Be(1);
 
             davey.CustomerType(CustomerType.Normal);
-            customerCache.Save(key, davey);
-            sqlDatabase.SaveCount().Should().Be(1);
+            customerCache.Upsert(key, davey);
+            sqlDatabase.CallCount().Should().Be(2);
         }
 
         private IEnumerable<CustomerData> GenerateRandoms()

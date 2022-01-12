@@ -108,8 +108,8 @@
                 <RowDefinition Height="0.5*" />
             </Grid.RowDefinitions>
 
-            <TextBox x:Name="TxtGetId" Grid.Row="0" Grid.Column="0" TextAlignment="Center" VerticalContentAlignment="Center"></TextBox>
-            <Button x:Name="BtnGetById" Grid.Row="1" Grid.Column="0" Click="BtnGetById_OnClick">Get by id</Button>
+            <Button x:Name="BtnGetById" Grid.Row="0" Grid.Column="0" Click="BtnGetById_OnClick">Get by id</Button>
+            <TextBox x:Name="TxtGetId" Grid.Row="1" Grid.Column="0" TextAlignment="Center" VerticalContentAlignment="Center"></TextBox>
 
             <Label Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">DisplayName</Label>
             <Label Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center">LocationName</Label>
@@ -121,7 +121,8 @@
             <TextBox x:Name="TxtEditCustomerType" Grid.Row="1" Grid.Column="3" TextAlignment="Center" VerticalContentAlignment="Center"></TextBox>
             <TextBox x:Name="TxtEditYear" Grid.Row="1" Grid.Column="4" TextAlignment="Center" VerticalContentAlignment="Center"></TextBox>
 
-            <Button x:Name="BtnSave" Grid.Row="1" Grid.Column="5" Click="BtnSave_OnClick">Save</Button>
+            <Button x:Name="BtnDelete" Grid.Row="0" Grid.Column="5" Click="BtnDelete_OnClick">Delete</Button>
+            <Button x:Name="BtnSave" Grid.Row="1" Grid.Column="5" Click="BtnSave_OnClick">Upsert</Button>
         </Grid>
 
     </Grid>

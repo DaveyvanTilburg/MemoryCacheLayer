@@ -1,4 +1,4 @@
-﻿namespace MemoryCacheLayer.Sql
+﻿namespace MemoryCacheLayer.Domain.Repository
 {
     public interface ICloneItem
     {

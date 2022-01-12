@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MemoryCacheLayer", "MemoryCacheLayer\MemoryCacheLayer.csproj", "{15877EDF-5C9A-4611-87D3-09019DA16526}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MemoryCacheLayer.WPF", "MemoryCacheLayer.WPF\MemoryCacheLayer.WPF.csproj", "{CECADC83-8519-4508-A8F6-1DAC8F1ACE52}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemoryCacheLayer.WPF", "MemoryCacheLayer.WPF\MemoryCacheLayer.WPF.csproj", "{CECADC83-8519-4508-A8F6-1DAC8F1ACE52}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MemoryCacheLayer.Domain", "MemoryCacheLayer.Domain\MemoryCacheLayer.Domain.csproj", "{B6794DB7-381F-445A-AE77-32E29C7ED569}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MemoryCacheLayer.UnitTests", "MemoryCacheLayer.UnitTests\MemoryCacheLayer.UnitTests.csproj", "{130F11AC-95E2-4A8A-9CDA-AF8BD7CD6F7D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemoryCacheLayer.Client", "MemoryCacheLayer.Client\MemoryCacheLayer.Client.csproj", "{F8E8779C-BE4D-4707-BB02-05DE379E1A8F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +17,22 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{15877EDF-5C9A-4611-87D3-09019DA16526}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{15877EDF-5C9A-4611-87D3-09019DA16526}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{15877EDF-5C9A-4611-87D3-09019DA16526}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{15877EDF-5C9A-4611-87D3-09019DA16526}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CECADC83-8519-4508-A8F6-1DAC8F1ACE52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CECADC83-8519-4508-A8F6-1DAC8F1ACE52}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CECADC83-8519-4508-A8F6-1DAC8F1ACE52}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CECADC83-8519-4508-A8F6-1DAC8F1ACE52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6794DB7-381F-445A-AE77-32E29C7ED569}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6794DB7-381F-445A-AE77-32E29C7ED569}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6794DB7-381F-445A-AE77-32E29C7ED569}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6794DB7-381F-445A-AE77-32E29C7ED569}.Release|Any CPU.Build.0 = Release|Any CPU
+		{130F11AC-95E2-4A8A-9CDA-AF8BD7CD6F7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{130F11AC-95E2-4A8A-9CDA-AF8BD7CD6F7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{130F11AC-95E2-4A8A-9CDA-AF8BD7CD6F7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{130F11AC-95E2-4A8A-9CDA-AF8BD7CD6F7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8E8779C-BE4D-4707-BB02-05DE379E1A8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8E8779C-BE4D-4707-BB02-05DE379E1A8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8E8779C-BE4D-4707-BB02-05DE379E1A8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8E8779C-BE4D-4707-BB02-05DE379E1A8F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
