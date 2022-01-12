@@ -55,11 +55,11 @@ namespace MemoryCacheLayer.Domain.Cache
             _repository.Upsert(key, _createDatabaseItem(value));
         }
 
-        IEnumerable<TClone> ICachedRepository<TDatabaseItem, TClone>.Where(string key, Func<IEnumerable<TDatabaseItem>, IEnumerable<TDatabaseItem>> filter)
+        IEnumerable<TClone> ICachedRepository<TDatabaseItem, TClone>.Where(string key, Func<IEnumerable<TDatabaseItem>, IEnumerable<TDatabaseItem>> predicate)
         {
             List<TDatabaseItem> items = List(key);
             IEnumerable<TDatabaseItem> result = new List<TDatabaseItem>(items);
-            IEnumerable<TClone> clones = filter(result).Select(i => i.Clone());
+            IEnumerable<TClone> clones = predicate(result).Select(i => i.Clone());
 
             return clones;
         }

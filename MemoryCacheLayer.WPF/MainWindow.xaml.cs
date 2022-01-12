@@ -44,7 +44,7 @@ namespace MemoryCacheLayer.WPF
         {
             int.TryParse(TxtYear.Text, out int year);
 
-            IEnumerable<CustomerData> Filter(IEnumerable<CustomerData> items) => 
+            IEnumerable<CustomerData> Predicate(IEnumerable<CustomerData> items) => 
                 items.Where(i => 
                     (string.IsNullOrWhiteSpace(TxtDisplayName.Text) || i.FirstName.IndexOf(TxtDisplayName.Text, StringComparison.OrdinalIgnoreCase) >= 0) && 
                     (string.IsNullOrWhiteSpace(TxtDisplayName.Text) || i.LastName.IndexOf(TxtDisplayName.Text, StringComparison.OrdinalIgnoreCase) >= 0) && 
@@ -56,7 +56,7 @@ namespace MemoryCacheLayer.WPF
             string key = TxtKey.Text;
 
             Stopwatch stopwatch = Stopwatch.StartNew();
-            List<Customer> result = _cache.Where(key, Filter).ToList();
+            List<Customer> result = _cache.Where(key, Predicate).ToList();
             stopwatch.Stop();
 
             UpdateStats(stopwatch.Elapsed, result.Count, key);

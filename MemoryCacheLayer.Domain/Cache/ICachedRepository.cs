@@ -6,7 +6,7 @@ namespace MemoryCacheLayer.Domain.Cache
     {
         void Delete(string key, int id);
         void Upsert(string key, TClone value);
-        IEnumerable<TClone> Where(string key, Func<IEnumerable<TDatabaseItem>, IEnumerable<TDatabaseItem>> filter);
+        IEnumerable<TClone> Where(string key, Func<IEnumerable<TDatabaseItem>, IEnumerable<TDatabaseItem>> predicate);
         TClone One(string key, Func<IEnumerable<TDatabaseItem>, TDatabaseItem> filter);
         void Clear(string key);
         int InCacheCount(string key);
