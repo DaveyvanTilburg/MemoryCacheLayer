@@ -1,4 +1,5 @@
-﻿using MemoryCacheLayer.Domain.Repository;
+﻿using MemoryCacheLayer.Client.Security;
+using MemoryCacheLayer.Domain.Repository;
 
 namespace MemoryCacheLayer.Client.Repository
 {
@@ -8,7 +9,7 @@ namespace MemoryCacheLayer.Client.Repository
 
         private int _callCount;
 
-        public FakeRepository(params (string, Func<IEnumerable<T>>)[] sources)
+        private FakeRepository(params (string, Func<IEnumerable<T>>)[] sources)
         {
             _sources = sources.ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
 
@@ -39,7 +40,22 @@ namespace MemoryCacheLayer.Client.Repository
         public int CallCount()
             => _callCount;
 
-        public void Reset()
+        public void ResetCount()
             => _callCount = 0;
+
+        public static (FakeRepository<T>, IRepository<T>) CreateFake(RepositoryBuilder builder, Role role, params (string, Func<IEnumerable<T>>)[] sources)
+        {
+            FakeRepository<T> unwrapped = new FakeRepository<T>(sources);
+            IRepository<T> result = builder.Build(unwrapped, role);
+
+            return (unwrapped, result);
+        }
+
+        public static IRepository<T> Create(RepositoryBuilder builder, Role role, params (string, Func<IEnumerable<T>>)[] sources)
+        {
+            IRepository<T> result = builder.Build(new FakeRepository<T>(sources), role);
+
+            return result;
+        }
     }
 }

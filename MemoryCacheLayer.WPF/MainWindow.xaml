@@ -4,9 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="500" Width="1000">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="0.1*"/>
             <RowDefinition Height="0.3*"/>
             <RowDefinition Height="0.4*"/>
             <RowDefinition Height="0.3*"/>
@@ -20,6 +21,51 @@
         </Grid.ColumnDefinitions>
         
         <Grid Grid.Row="1" Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition Width="0.5*"/>
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">(0,1,2,3) Key: </Label>
+            <TextBox x:Name="TxtKey" Grid.Column="1" TextAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+        </Grid>
+
+        <Grid Grid.Row="1" Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.5*"/>
+                <RowDefinition Height="0.5*"/>
+            </Grid.RowDefinitions>
+
+            <Label x:Name="LabelMemoryUsage" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
+        </Grid>
+
+        <Grid Grid.Column="0" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition Width="0.5*"/>
+            </Grid.ColumnDefinitions>
+
+            <Button x:Name="ButtonFullAccess" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Full Access" Click="Role_OnClick" />
+            <Button x:Name="ButtonReadOnly" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Content="ReadOnly" Click="Role_OnClick"/>
+            <Button x:Name="ButtonWriteOnly" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Content="WriteOnly" Click="Role_OnClick"/>
+            <Button x:Name="ButtonEnableCache" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Enable cache" Click="Role_OnClick"/>
+            <Button x:Name="ButtonDisableCache" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Disable cache" Click="Role_OnClick"/>
+        </Grid>
+
+        <Grid Grid.Row="1" Grid.Column="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.5*"/>
+                <RowDefinition Height="0.5*"/>
+            </Grid.RowDefinitions>
+
+            <Label Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">When get called +500ms</Label>
+            <Label Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">When save called +100ms</Label>
+        </Grid>
+
+        <Grid Grid.Row="2" Grid.Column="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="0.3*"/>
                 <RowDefinition Height="0.3*"/>
@@ -43,41 +89,10 @@
             <TextBox Grid.Column="1" Grid.Row="2" x:Name="TxtType" TextAlignment="Center" VerticalContentAlignment="Center"/>
             <TextBox Grid.Column="1" Grid.Row="3" x:Name="TxtYear" TextAlignment="Center" VerticalContentAlignment="Center" MaxLength="4" />
 
-            <Button x:Name="BtnGo" Grid.Row="1" Grid.Column="2" Click="BtnGo_OnClick">Get</Button>
-            <Button x:Name="BtnResetCache" Grid.Row="2" Grid.Column="2" Click="BtnResetCache_OnClick">Reset cache</Button>
-        </Grid>
-        
-        <Grid Grid.Row="0" Grid.Column="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.5*"/>
-                <ColumnDefinition Width="0.5*"/>
-            </Grid.ColumnDefinitions>
-
-            <Label Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">(0,1,2,3) Key: </Label>
-            <TextBox x:Name="TxtKey" Grid.Column="1" TextAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+            <Button x:Name="BtnGo" Grid.Row="0" Grid.Column="2" Click="BtnGo_OnClick">Get</Button>
         </Grid>
 
-        <Grid Grid.Row="0" Grid.Column="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="0.5*"/>
-                <RowDefinition Height="0.5*"/>
-            </Grid.RowDefinitions>
-
-            <Label x:Name="LabelCacheCount" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
-            <Label x:Name="LabelMemoryUsage" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
-        </Grid>
-
-        <Grid Grid.Row="0" Grid.Column="3">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="0.5*"/>
-                <RowDefinition Height="0.5*"/>
-            </Grid.RowDefinitions>
-
-            <Label Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">When get called +500ms</Label>
-            <Label Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">When save called +100ms</Label>
-        </Grid>
-
-        <Grid Grid.Row="1" Grid.Column="1">
+        <Grid Grid.Row="2" Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="0.5*"/>
                 <RowDefinition Height="0.5*"/>
@@ -87,14 +102,15 @@
             <Label x:Name="LabelResultCount" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
         </Grid>
 
-        <Border x:Name="BorderMemory" Grid.Row="1" Grid.Column="2" BorderThickness="1"></Border>
-        <Image Source="pack://application:,,,/Icons/memory.png" Stretch="Uniform" Grid.Column="2" Grid.Row="1" Height="50px"/>
+        <Border x:Name="BorderMemory" Grid.Row="2" Grid.Column="2" BorderThickness="1"></Border>
+        <Image Source="pack://application:,,,/Icons/memory.png" Stretch="Uniform" Grid.Column="2" Grid.Row="2" Height="50px"/>
 
-        <Border x:Name="BorderDatabase" Grid.Row="1" Grid.Column="3" BorderThickness="1"></Border>
-        <Image Source="pack://application:,,,/Icons/database.png" Stretch="Uniform" Grid.Column="3" Grid.Row="1" Height="50px"/>
+        <Border x:Name="BorderDatabase" Grid.Row="2" Grid.Column="3" BorderThickness="1"></Border>
+        <Image Source="pack://application:,,,/Icons/database.png" Stretch="Uniform" Grid.Column="3" Grid.Row="2" Height="50px"/>
 
-        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="4">
+        <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.5*"/>
                 <ColumnDefinition Width="0.5*"/>
                 <ColumnDefinition Width="0.5*"/>
                 <ColumnDefinition Width="0.5*"/>
@@ -111,18 +127,20 @@
             <Button x:Name="BtnGetById" Grid.Row="0" Grid.Column="0" Click="BtnGetById_OnClick">Get by id</Button>
             <TextBox x:Name="TxtGetId" Grid.Row="1" Grid.Column="0" TextAlignment="Center" VerticalContentAlignment="Center"></TextBox>
 
-            <Label Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">DisplayName</Label>
-            <Label Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center">LocationName</Label>
-            <Label Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center">CustomerType</Label>
-            <Label Grid.Row="0" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center">Year</Label>
+            <Label Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">FirstName</Label>
+            <Label Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center">LastName</Label>
+            <Label Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center">LocationName</Label>
+            <Label Grid.Row="0" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center">CustomerType</Label>
+            <Label Grid.Row="0" Grid.Column="5" HorizontalAlignment="Center" VerticalAlignment="Center">Year</Label>
 
-            <TextBox x:Name="TxtEditDisplayName" Grid.Row="1" Grid.Column="1" TextAlignment="Center" VerticalContentAlignment="Center"></TextBox>
-            <TextBox x:Name="TxtEditLocationName" Grid.Row="1" Grid.Column="2" TextAlignment="Center" VerticalContentAlignment="Center"></TextBox>
-            <TextBox x:Name="TxtEditCustomerType" Grid.Row="1" Grid.Column="3" TextAlignment="Center" VerticalContentAlignment="Center"></TextBox>
-            <TextBox x:Name="TxtEditYear" Grid.Row="1" Grid.Column="4" TextAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+            <TextBox x:Name="TxtEditFirstName" Grid.Row="1" Grid.Column="1" TextAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+            <TextBox x:Name="TxtEditLastName" Grid.Row="1" Grid.Column="2" TextAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+            <TextBox x:Name="TxtEditLocationName" Grid.Row="1" Grid.Column="3" TextAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+            <TextBox x:Name="TxtEditCustomerType" Grid.Row="1" Grid.Column="4" TextAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+            <TextBox x:Name="TxtEditYear" Grid.Row="1" Grid.Column="5" TextAlignment="Center" VerticalContentAlignment="Center"></TextBox>
 
-            <Button x:Name="BtnDelete" Grid.Row="0" Grid.Column="5" Click="BtnDelete_OnClick">Delete</Button>
-            <Button x:Name="BtnSave" Grid.Row="1" Grid.Column="5" Click="BtnSave_OnClick">Upsert</Button>
+            <Button x:Name="BtnDelete" Grid.Row="0" Grid.Column="6" Click="BtnDelete_OnClick">Delete</Button>
+            <Button x:Name="BtnSave" Grid.Row="1" Grid.Column="6" Click="BtnSave_OnClick">Upsert</Button>
         </Grid>
 
     </Grid>

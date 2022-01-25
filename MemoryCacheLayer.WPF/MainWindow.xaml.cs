@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using MemoryCacheLayer.Client.Customers;
 using MemoryCacheLayer.Client.Repository;
+using MemoryCacheLayer.Client.Security;
 using MemoryCacheLayer.Domain.Cache;
 using MemoryCacheLayer.Domain.Repository;
 
@@ -13,27 +15,22 @@ namespace MemoryCacheLayer.WPF
 {
     public partial class MainWindow : Window
     {
-        private readonly FakeRepository<Customer> _repository;
-        private readonly IRepository<Customer> _wrappedRepository;
-        private readonly CachedRepositoryWrapper<Customer> _cache;
+        private FakeRepository<Customer> _fakeRepository;
+        private IRepository<Customer> _wrappedRepository;
+
+        private Role _role;
+        private bool _cacheEnabled;
 
         public MainWindow()
         {
             WindowStartupLocation = WindowStartupLocation.CenterScreen;
             InitializeComponent();
 
-            _repository = new FakeRepository<Customer>(
-                ("0", () => MockDatabaseSet(0, 100000)),
-                ("1", () => MockDatabaseSet(0, 2000)),
-                ("2", () => MockDatabaseSet(0, 800)),
-                ("3", () => MockDatabaseSet(0, 50000))
+            _role = Role.FullAccess;
+            _cacheEnabled = true;
 
-            );
-
-            _cache = new CachedRepositoryWrapper<Customer>(
-                _repository
-            );
-            _wrappedRepository = _cache;
+            UpdateRepository();
+            UpdateButtonColors();
         }
 
         private static IEnumerable<Customer> MockDatabaseSet(int startIndex, int range)
@@ -60,16 +57,6 @@ namespace MemoryCacheLayer.WPF
             UpdateStats(stopwatch.Elapsed, result.Count, key);
         }
 
-        private void BtnResetCache_OnClick(object sender, RoutedEventArgs e)
-        {
-            string key = TxtKey.Text;
-
-            _repository.Reset();
-            _cache.Clear(key);
-
-            UpdateStats(new TimeSpan(0), 0, key);
-        }
-
         private void BtnGetById_OnClick(object sender, RoutedEventArgs e)
         {
             string key = TxtKey.Text;
@@ -79,7 +66,8 @@ namespace MemoryCacheLayer.WPF
             Customer result = _wrappedRepository.Get(key).FirstOrDefault(i => i.Id() == id);
             stopwatch.Stop();
 
-            TxtEditDisplayName.Text = result.DisplayName();
+            TxtEditFirstName.Text = result.FirstName();
+            TxtEditLastName.Text = result.LastName();
             TxtEditLocationName.Text = result.LocationName();
             TxtEditCustomerType.Text = result.CustomerType().ToString();
             TxtEditYear.Text = result.BirthDate().Year.ToString();
@@ -95,12 +83,10 @@ namespace MemoryCacheLayer.WPF
             Enum.TryParse(typeof(CustomerType), TxtEditCustomerType.Text, true, out object? customerType);
             customerType ??= CustomerType.Normal;
 
-            string[] nameParts = TxtEditDisplayName.Text.Split("-");
-
             Customer customer = new Customer(
                 id,
-                nameParts[0],
-                nameParts[1],
+                TxtEditFirstName.Text,
+                TxtEditLastName.Text,
                 TxtEditLocationName.Text,
                 new DateTime(year, 1, 1),
                 (CustomerType)customerType
@@ -129,13 +115,29 @@ namespace MemoryCacheLayer.WPF
         {
             LabelResultCount.Content = $"Result count: {resultCount}";
             LabelTimeElapsed.Content = $"Time elapsed: {timeElapsed:mm':'ss':'ffffff}";
-            LabelCacheCount.Content = $"Cached count: {_cache.InCacheCount(key)}";
 
             BorderMemory.BorderBrush = new SolidColorBrush(Color(1));
-            BorderDatabase.BorderBrush = new SolidColorBrush(Color(_repository.CallCount() + _repository.CallCount()));
-            _repository.Reset();
+            BorderDatabase.BorderBrush = new SolidColorBrush(Color(_fakeRepository.CallCount() + _fakeRepository.CallCount()));
+            _fakeRepository.ResetCount();
 
             LabelMemoryUsage.Content = FormatSize(GetUsedPhys());
+        }
+
+        private void UpdateRepository()
+        {
+            (_fakeRepository, _wrappedRepository) = FakeRepository<Customer>.CreateFake(
+                new RepositoryBuilder(_cacheEnabled),
+                _role,
+                ("0", () => MockDatabaseSet(0, 100000)),
+                ("1", () => MockDatabaseSet(0, 2000)),
+                ("2", () => MockDatabaseSet(0, 800)),
+                ("3", () => MockDatabaseSet(0, 50000)
+                ));
+
+            CachedRepositoryWrapper<Customer>.Clear("0");
+            CachedRepositoryWrapper<Customer>.Clear("1");
+            CachedRepositoryWrapper<Customer>.Clear("2");
+            CachedRepositoryWrapper<Customer>.Clear("3");
         }
 
         private Color Color(int count)
@@ -158,6 +160,38 @@ namespace MemoryCacheLayer.WPF
             }
             string[] unit = { "B", "KB", "MB", "GB", "TB" };
             return $"{Math.Round(d, 2)} {unit[i]}";
+        }
+
+        private void Role_OnClick(object sender, RoutedEventArgs e)
+        {
+            Button button = (Button)sender;
+
+            if (button.Name == "ButtonFullAccess")
+                _role = Role.FullAccess;
+
+            if (button.Name == "ButtonReadOnly")
+                _role = Role.ReadOnly;
+
+            if (button.Name == "ButtonWriteOnly")
+                _role = Role.WriteOnly;
+
+            if (button.Name == "ButtonEnableCache")
+                _cacheEnabled = true;
+
+            if (button.Name == "ButtonDisableCache")
+                _cacheEnabled = false;
+
+            UpdateRepository();
+            UpdateButtonColors();
+        }
+
+        private void UpdateButtonColors()
+        {
+            ButtonFullAccess.BorderBrush = new SolidColorBrush(_role == Role.FullAccess ? Colors.Red : Colors.Gray);
+            ButtonReadOnly.BorderBrush = new SolidColorBrush(_role == Role.ReadOnly ? Colors.Red : Colors.Gray);
+            ButtonWriteOnly.BorderBrush = new SolidColorBrush(_role == Role.WriteOnly ? Colors.Red : Colors.Gray);
+            ButtonEnableCache.BorderBrush = new SolidColorBrush(_cacheEnabled ? Colors.Red : Colors.Gray);
+            ButtonDisableCache.BorderBrush = new SolidColorBrush(!_cacheEnabled ? Colors.Red : Colors.Gray);
         }
     }
 }

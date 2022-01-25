@@ -46,7 +46,6 @@ namespace MemoryCacheLayer.Domain.Cache
             list.Remove(cachedItem);
             list.Add(value);
 
-
             _child.Upsert(key, value);
         }
 
@@ -67,14 +66,10 @@ namespace MemoryCacheLayer.Domain.Cache
             return source;
         }
 
-        private string CacheKey(string key)
+        private static string CacheKey(string key)
             => $"ListOf({typeof(T).Name})-Key({key})";
 
-
-        public void Clear(string key)
-            => _cache.Remove(CacheKey(key));
-
-        public int InCacheCount(string key)
-            => ((List<T>)_cache.Get(CacheKey(key)))?.Count ?? 0;
+        public static void Clear(string key)
+            => MemoryCache.Default.Remove(CacheKey(key));
     }
 }
