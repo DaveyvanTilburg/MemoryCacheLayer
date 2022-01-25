@@ -1,9 +1,10 @@
 ﻿namespace MemoryCacheLayer.Domain.Repository
 {
-    public interface IRepositoryItem<out T> where T : struct, ICloneItem
+    public interface IRepositoryItem
     {
         int Id();
-        T Clone();
-        bool Equals(ICloneItem other);
+        IRepositoryItem Clone();
+        string Hash();
+        bool Equals(IRepositoryItem other);
     }
 }

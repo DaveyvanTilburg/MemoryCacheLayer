@@ -2,7 +2,7 @@
 
 namespace MemoryCacheLayer.Client.Customers
 {
-    public struct Customer : ICloneItem
+    public struct Customer : IRepositoryItem
     {
         private readonly int _id;
         private readonly string _firstName;
@@ -24,11 +24,11 @@ namespace MemoryCacheLayer.Client.Customers
         public int Id()
             => _id;
 
-        string ICloneItem.Hash()
-            => $"{_id}_{_firstName}_{_lastName}_{_locationName}_{_birthDate}_{_customerType}";
+        public string FirstName()
+            => _firstName;
 
-        public string DisplayName()
-            => $"Name: {_firstName} - {_lastName}";
+        public string LastName()
+            => _lastName;
 
         public string LocationName()
             => _locationName;
@@ -39,16 +39,22 @@ namespace MemoryCacheLayer.Client.Customers
         public CustomerType CustomerType()
             => _customerType;
 
+        IRepositoryItem IRepositoryItem.Clone()
+            => this;
+
+        bool IRepositoryItem.Equals(IRepositoryItem other)
+            => Hash().Equals(other.Hash());
+
+        string IRepositoryItem.Hash()
+            => Hash();
+
+        private string Hash()
+            => $"{_id}_{_firstName}_{_lastName}_{_locationName}_{_birthDate}_{_customerType}";
+
+
         public void CustomerType(CustomerType customerType)
             => _customerType = customerType;
-
-        public CustomerData CreateData()
-            => new(
-                _id,
-                _firstName,
-                _lastName,
-                _locationName,
-                _birthDate,
-                _customerType);
+        public string DisplayName()
+            => $"{_firstName} - {_lastName}";
     }
 }

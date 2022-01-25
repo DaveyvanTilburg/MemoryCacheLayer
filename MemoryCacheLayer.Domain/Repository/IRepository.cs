@@ -1,10 +1,10 @@
 ﻿namespace MemoryCacheLayer.Domain.Repository
 {
-    public interface IRepository<TDatabaseItem> where TDatabaseItem : class
+    public interface IRepository<T> where T : IRepositoryItem
     {
         void Delete(string key, int id);
-        void Upsert(string key, TDatabaseItem value);
+        void Upsert(string key, T value);
 
-        IEnumerable<TDatabaseItem> Get(string key);
+        IEnumerable<T> Get(string key);
     }
 }

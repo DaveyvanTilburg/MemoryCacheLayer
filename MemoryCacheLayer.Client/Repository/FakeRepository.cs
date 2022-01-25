@@ -2,30 +2,30 @@
 
 namespace MemoryCacheLayer.Client.Repository
 {
-    public class FakeRepository<TDatabaseItem> : IRepository<TDatabaseItem> where TDatabaseItem : class
+    public class FakeRepository<T> : IRepository<T> where T : IRepositoryItem
     {
-        private readonly Dictionary<string, Func<IEnumerable<TDatabaseItem>>> _sources;
+        private readonly Dictionary<string, Func<IEnumerable<T>>> _sources;
 
         private int _callCount;
 
-        public FakeRepository(params (string, Func<IEnumerable<TDatabaseItem>>)[] sources)
+        public FakeRepository(params (string, Func<IEnumerable<T>>)[] sources)
         {
             _sources = sources.ToDictionary(tuple => tuple.Item1, tuple => tuple.Item2);
 
             _callCount = 0;
         }
 
-        void IRepository<TDatabaseItem>.Delete(string key, int id)
+        void IRepository<T>.Delete(string key, int id)
             => _callCount++;
 
-        void IRepository<TDatabaseItem>.Upsert(string key, TDatabaseItem value)
+        void IRepository<T>.Upsert(string key, T value)
         {
             _callCount++;
 
             Thread.Sleep(100);
         }
 
-        IEnumerable<TDatabaseItem> IRepository<TDatabaseItem>.Get(string key)
+        IEnumerable<T> IRepository<T>.Get(string key)
         {
             _callCount++;
 
@@ -33,7 +33,7 @@ namespace MemoryCacheLayer.Client.Repository
 
             return _sources.ContainsKey(key) ? 
                 _sources[key]() : 
-                new List<TDatabaseItem>();
+                new List<T>();
         }
 
         public int CallCount()
