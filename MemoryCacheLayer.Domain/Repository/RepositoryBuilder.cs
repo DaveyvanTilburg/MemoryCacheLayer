@@ -1,8 +1,7 @@
-﻿using MemoryCacheLayer.Client.Security;
-using MemoryCacheLayer.Domain.Cache;
-using MemoryCacheLayer.Domain.Repository;
+﻿using MemoryCacheLayer.Domain.Cache;
+using MemoryCacheLayer.Domain.Security;
 
-namespace MemoryCacheLayer.Client.Repository
+namespace MemoryCacheLayer.Domain.Repository
 {
     public class RepositoryBuilder
     {
@@ -13,7 +12,7 @@ namespace MemoryCacheLayer.Client.Repository
             _cacheEnabled = cacheEnabled;
         }
 
-        internal IRepository<T> Build<T>(IRepository<T> child, Role role) where T : IRepositoryItem
+        public IRepository<T> Build<T>(IRepository<T> child, Role role) where T : struct, IRepositoryItem
         {
             IRepository<T> result = child;
 

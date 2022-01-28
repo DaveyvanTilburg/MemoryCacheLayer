@@ -1,4 +1,4 @@
-﻿namespace MemoryCacheLayer.Client.Security
+﻿namespace MemoryCacheLayer.Domain.Security
 {
     public enum Role
     {

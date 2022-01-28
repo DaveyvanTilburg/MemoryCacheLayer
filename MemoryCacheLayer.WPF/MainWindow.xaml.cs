@@ -7,9 +7,9 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using MemoryCacheLayer.Client.Customers;
 using MemoryCacheLayer.Client.Repository;
-using MemoryCacheLayer.Client.Security;
 using MemoryCacheLayer.Domain.Cache;
 using MemoryCacheLayer.Domain.Repository;
+using MemoryCacheLayer.Domain.Security;
 
 namespace MemoryCacheLayer.WPF
 {
@@ -36,7 +36,7 @@ namespace MemoryCacheLayer.WPF
         private static IEnumerable<Customer> MockDatabaseSet(int startIndex, int range)
         {
             for (int i = startIndex; i < range; i++)
-                yield return new Customer(i, $"Test{i}", $"Test{i}", $"Test{i}", new DateTime(1900, 1, 1).AddYears(i % 1000), i % 50 == 0 ? CustomerType.Gold : CustomerType.Normal);
+                yield return new Customer(i+1, $"Test{i}", $"Test{i}", $"Test{i}", new DateTime(1900, 1, 1).AddYears(i % 1000), i % 50 == 0 ? CustomerType.Gold : CustomerType.Normal);
         }
 
         private void BtnGo_OnClick(object sender, RoutedEventArgs e)
@@ -66,13 +66,19 @@ namespace MemoryCacheLayer.WPF
             Customer result = _wrappedRepository.Get(key).FirstOrDefault(i => i.Id() == id);
             stopwatch.Stop();
 
-            TxtEditFirstName.Text = result.FirstName();
-            TxtEditLastName.Text = result.LastName();
-            TxtEditLocationName.Text = result.LocationName();
-            TxtEditCustomerType.Text = result.CustomerType().ToString();
-            TxtEditYear.Text = result.BirthDate().Year.ToString();
+            LoadCustomer(result);
 
             UpdateStats(stopwatch.Elapsed, result.Id() > 0 ? 1 : 0, key);
+        }
+
+        private void LoadCustomer(Customer customer)
+        {
+            TxtGetId.Text = customer.Id().ToString();
+            TxtEditFirstName.Text = customer.FirstName();
+            TxtEditLastName.Text = customer.LastName();
+            TxtEditLocationName.Text = customer.LocationName();
+            TxtEditCustomerType.Text = customer.CustomerType().ToString();
+            TxtEditYear.Text = customer.BirthDate().Year.ToString();
         }
 
         private void BtnSave_OnClick(object sender, RoutedEventArgs e)
@@ -93,7 +99,15 @@ namespace MemoryCacheLayer.WPF
             );
 
             Stopwatch stopwatch = Stopwatch.StartNew();
-            _wrappedRepository.Upsert(key, customer);
+
+            if (customer.Id() == 0)
+            {
+                int newId = _wrappedRepository.Insert(key, customer);
+                LoadCustomer(_wrappedRepository.Get(key).FirstOrDefault(c => c.Id() == newId));
+            }
+            else
+                _wrappedRepository.Update(key, customer);
+
             stopwatch.Stop();
 
             UpdateStats(stopwatch.Elapsed, 1, key);
@@ -128,10 +142,10 @@ namespace MemoryCacheLayer.WPF
             (_fakeRepository, _wrappedRepository) = FakeRepository<Customer>.CreateFake(
                 new RepositoryBuilder(_cacheEnabled),
                 _role,
-                ("0", () => MockDatabaseSet(0, 100000)),
-                ("1", () => MockDatabaseSet(0, 2000)),
-                ("2", () => MockDatabaseSet(0, 800)),
-                ("3", () => MockDatabaseSet(0, 50000)
+                ("0", MockDatabaseSet(0, 100000).ToList()),
+                ("1", MockDatabaseSet(0, 2000).ToList()),
+                ("2", MockDatabaseSet(0, 800).ToList()),
+                ("3", MockDatabaseSet(0, 50000).ToList()
                 ));
 
             CachedRepositoryWrapper<Customer>.Clear("0");

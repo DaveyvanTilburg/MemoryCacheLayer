@@ -3,7 +3,7 @@ using System.Runtime.Caching;
 
 namespace MemoryCacheLayer.Domain.Cache
 {
-    public class CachedRepositoryWrapper<T> : IRepository<T> where T : IRepositoryItem
+    public class CachedRepositoryWrapper<T> : IRepository<T> where T : struct, IRepositoryItem
     {
         private readonly IRepository<T> _child;
 
@@ -21,22 +21,35 @@ namespace MemoryCacheLayer.Domain.Cache
             List<T> list = List(key);
             T cachedItem = list.FirstOrDefault(i => i.Id() == id);
 
-            if (cachedItem == null)
+            if (cachedItem.Id() == 0)
                 return;
 
             list.Remove(cachedItem);
             _child.Delete(key, id);
         }
 
-        void IRepository<T>.Upsert(string key, T value)
+        int IRepository<T>.Insert(string key, T value)
+        {
+            if (value.Id() != 0)
+                return value.Id();
+
+            int newId = _child.Insert(key, value);
+            value.Id(newId);
+            List<T> list = List(key);
+            list.Add(value);
+
+            return newId;
+        }
+
+        void IRepository<T>.Update(string key, T value)
         {
             List<T> list = List(key);
             T cachedItem = list.FirstOrDefault(i => i.Id() == value.Id());
 
-            if (cachedItem == null)
+            if (cachedItem.Id() == 0)
             {
                 list.Add(value);
-                _child.Upsert(key, value);
+                _child.Update(key, value);
                 return;
             }
 
@@ -46,24 +59,27 @@ namespace MemoryCacheLayer.Domain.Cache
             list.Remove(cachedItem);
             list.Add(value);
 
-            _child.Upsert(key, value);
+            _child.Update(key, value);
         }
 
         IEnumerable<T> IRepository<T>.Get(string key)
-            => List(key);
+            => List(key).AsEnumerable();
 
         private List<T> List(string key)
         {
             string cacheKey = CacheKey(key);
-            List<T> source = (List<T>)_cache.Get(cacheKey);
+            object? source = _cache.Get(cacheKey);
 
             if (source != null)
-                return source;
+            {
+                List<T> list = source as List<T> ?? new List<T>();
+                return list;
+            }
 
-            source = _child.Get(key).ToList();
-            _cache.Add(cacheKey, source, DateTimeOffset.MaxValue);
+            List<T> newList = _child.Get(key).ToList();
+            _cache.Add(cacheKey, newList, DateTimeOffset.MaxValue);
 
-            return source;
+            return newList;
         }
 
         private static string CacheKey(string key)

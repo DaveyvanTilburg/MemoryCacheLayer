@@ -4,7 +4,7 @@ namespace MemoryCacheLayer.Client.Customers
 {
     public struct Customer : IRepositoryItem
     {
-        private readonly int _id;
+        private int _id;
         private readonly string _firstName;
         private readonly string _lastName;
         private readonly string _locationName;
@@ -24,6 +24,9 @@ namespace MemoryCacheLayer.Client.Customers
         public int Id()
             => _id;
 
+        void IRepositoryItem.Id(int value)
+            => _id = value;
+
         public string FirstName()
             => _firstName;
 
@@ -38,18 +41,6 @@ namespace MemoryCacheLayer.Client.Customers
 
         public CustomerType CustomerType()
             => _customerType;
-
-        IRepositoryItem IRepositoryItem.Clone()
-            => this;
-
-        bool IRepositoryItem.Equals(IRepositoryItem other)
-            => Hash().Equals(other.Hash());
-
-        string IRepositoryItem.Hash()
-            => Hash();
-
-        private string Hash()
-            => $"{_id}_{_firstName}_{_lastName}_{_locationName}_{_birthDate}_{_customerType}";
 
 
         public void CustomerType(CustomerType customerType)
