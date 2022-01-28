@@ -10,7 +10,6 @@ namespace MemoryCacheLayer.Client.Customers
         IRepositoryItem IRepositoryItem.CloneWithId(int value)
             => this with { Id = value };
 
-
         public Customer CloneWithCustomerType(CustomerType customerType)
             => this with { CustomerType = customerType };
 

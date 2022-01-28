@@ -63,7 +63,7 @@ namespace MemoryCacheLayer.Domain.Cache
         }
 
         IEnumerable<T> IRepository<T>.Get(string key)
-            => List(key).AsEnumerable();
+            => List(key);
 
         private List<T> List(string key)
         {
