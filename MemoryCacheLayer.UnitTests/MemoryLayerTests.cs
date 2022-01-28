@@ -34,27 +34,27 @@ namespace MemoryCacheLayer.UnitTests
             (FakeRepository<Customer> unwrapped, IRepository<Customer> wrapped) = Repository(key);
 
             List<Customer> result = wrapped.Get(key).Where(
-                i => i.LocationName().Equals("Gouda") && 
-                                    i.LastName().Equals("Tilburg") && 
-                                    i.CustomerType() == CustomerType.Gold
+                i => i.LocationName.Equals("Gouda") && 
+                                    i.LastName.Equals("Tilburg") && 
+                                    i.CustomerType == CustomerType.Gold
             ).ToList();
 
             result.Count.Should().Be(2);
             unwrapped.CallCount().Should().Be(1);
 
             List<Customer> normals = wrapped.Get(key).Where(i =>
-                i.FirstName().Contains("Test") &&
-                i.CustomerType() == CustomerType.Normal
+                i.FirstName.Contains("Test") &&
+                i.CustomerType == CustomerType.Normal
             ).ToList();
 
             normals.Count.Should().Be(99996);
             unwrapped.CallCount().Should().Be(1);
 
             Customer unknown = wrapped.Get(key)
-                .FirstOrDefault(i => i.FirstName().Contains("YYY"));
+                .FirstOrDefault(i => i.FirstName.Contains("YYY"));
 
             unknown.Should().NotBeNull();
-            unknown.Id().Should().Be(0);
+            unknown.Id.Should().Be(0);
         }
 
         [Fact]
@@ -64,7 +64,7 @@ namespace MemoryCacheLayer.UnitTests
             (FakeRepository<Customer> unwrapped, IRepository<Customer> wrapped) = Repository(key);
 
             Customer davey = wrapped.Get(key)
-                .FirstOrDefault(i => i.FirstName().Contains("Davey"));
+                .FirstOrDefault(i => i.FirstName.Contains("Davey"));
 
             davey.Should().NotBeNull();
             unwrapped.CallCount().Should().Be(1);
@@ -72,23 +72,23 @@ namespace MemoryCacheLayer.UnitTests
             wrapped.Update(key, davey);
             unwrapped.CallCount().Should().Be(1);
 
-            davey.CustomerType(CustomerType.Normal);
+            Customer updatedDavey = davey.CloneWithCustomerType(CustomerType.Normal);
 
             Customer davey2 = wrapped.Get(key)
-                .FirstOrDefault(i => i.FirstName().Contains("Davey"));
+                .FirstOrDefault(i => i.FirstName.Contains("Davey"));
 
-            davey2.CustomerType().Should().Be(CustomerType.Gold);
+            davey2.CustomerType.Should().Be(CustomerType.Gold);
 
-            wrapped.Update(key, davey);
+            wrapped.Update(key, updatedDavey);
             unwrapped.CallCount().Should().Be(2);
 
             Customer davey3 = wrapped.Get(key)
-                .FirstOrDefault(i => i.FirstName().Contains("Davey"));
-            davey3.CustomerType().Should().Be(CustomerType.Normal);
+                .FirstOrDefault(i => i.FirstName.Contains("Davey"));
+            davey3.CustomerType.Should().Be(CustomerType.Normal);
 
-            davey2.CustomerType().Should().Be(CustomerType.Gold);
+            davey2.CustomerType.Should().Be(CustomerType.Gold);
 
-            davey3.Equals(davey).Should().Be(true);
+            davey3.Equals(updatedDavey).Should().Be(true);
             davey3.Equals(davey2).Should().Be(false);
         }
 
@@ -100,8 +100,8 @@ namespace MemoryCacheLayer.UnitTests
 
             var newCustomer = new Customer(0, "new", "new", "new", DateTime.MinValue, CustomerType.Normal);
             var newId = wrapped.Insert(key, newCustomer);
-            var newEntry = wrapped.Get(key).FirstOrDefault(e => e.Id() == newId);
-            newEntry.Id().Should().Be(newId);
+            var newEntry = wrapped.Get(key).FirstOrDefault(e => e.Id == newId);
+            newEntry.Id.Should().Be(newId);
 
             unwrapped.CallCount().Should().Be(2);
         }

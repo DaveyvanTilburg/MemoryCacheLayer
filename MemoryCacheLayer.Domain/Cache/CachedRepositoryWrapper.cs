@@ -34,9 +34,9 @@ namespace MemoryCacheLayer.Domain.Cache
                 return value.Id();
 
             int newId = _child.Insert(key, value);
-            value.Id(newId);
+            T updatedValue = (T)value.CloneWithId(newId);
             List<T> list = List(key);
-            list.Add(value);
+            list.Add(updatedValue);
 
             return newId;
         }

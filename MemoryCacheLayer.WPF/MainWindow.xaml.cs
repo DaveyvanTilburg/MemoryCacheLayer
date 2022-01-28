@@ -46,11 +46,11 @@ namespace MemoryCacheLayer.WPF
 
             Stopwatch stopwatch = Stopwatch.StartNew();
             List<Customer> result = _wrappedRepository.Get(key).Where(i =>
-                (string.IsNullOrWhiteSpace(TxtDisplayName.Text) || i.FirstName().IndexOf(TxtDisplayName.Text, StringComparison.OrdinalIgnoreCase) >= 0) &&
-                (string.IsNullOrWhiteSpace(TxtDisplayName.Text) || i.LastName().IndexOf(TxtDisplayName.Text, StringComparison.OrdinalIgnoreCase) >= 0) &&
-                (string.IsNullOrWhiteSpace(TxtLocationName.Text) || i.LocationName().IndexOf(TxtLocationName.Text, StringComparison.OrdinalIgnoreCase) >= 0) &&
-                (string.IsNullOrWhiteSpace(TxtType.Text) || i.CustomerType().ToString().IndexOf(TxtType.Text, StringComparison.OrdinalIgnoreCase) >= 0) &&
-                (year == 0 || i.BirthDate().Year == year))
+                (string.IsNullOrWhiteSpace(TxtDisplayName.Text) || i.FirstName.IndexOf(TxtDisplayName.Text, StringComparison.OrdinalIgnoreCase) >= 0) &&
+                (string.IsNullOrWhiteSpace(TxtDisplayName.Text) || i.LastName.IndexOf(TxtDisplayName.Text, StringComparison.OrdinalIgnoreCase) >= 0) &&
+                (string.IsNullOrWhiteSpace(TxtLocationName.Text) || i.LocationName.IndexOf(TxtLocationName.Text, StringComparison.OrdinalIgnoreCase) >= 0) &&
+                (string.IsNullOrWhiteSpace(TxtType.Text) || i.CustomerType.ToString().IndexOf(TxtType.Text, StringComparison.OrdinalIgnoreCase) >= 0) &&
+                (year == 0 || i.BirthDate.Year == year))
                 .ToList();
             stopwatch.Stop();
 
@@ -63,22 +63,22 @@ namespace MemoryCacheLayer.WPF
             int.TryParse(TxtGetId.Text, out int id);
 
             Stopwatch stopwatch = Stopwatch.StartNew();
-            Customer result = _wrappedRepository.Get(key).FirstOrDefault(i => i.Id() == id);
+            Customer result = _wrappedRepository.Get(key).FirstOrDefault(i => i.Id == id);
             stopwatch.Stop();
 
             LoadCustomer(result);
 
-            UpdateStats(stopwatch.Elapsed, result.Id() > 0 ? 1 : 0, key);
+            UpdateStats(stopwatch.Elapsed, result.Id > 0 ? 1 : 0, key);
         }
 
         private void LoadCustomer(Customer customer)
         {
-            TxtGetId.Text = customer.Id().ToString();
-            TxtEditFirstName.Text = customer.FirstName();
-            TxtEditLastName.Text = customer.LastName();
-            TxtEditLocationName.Text = customer.LocationName();
-            TxtEditCustomerType.Text = customer.CustomerType().ToString();
-            TxtEditYear.Text = customer.BirthDate().Year.ToString();
+            TxtGetId.Text = customer.Id.ToString();
+            TxtEditFirstName.Text = customer.FirstName;
+            TxtEditLastName.Text = customer.LastName;
+            TxtEditLocationName.Text = customer.LocationName;
+            TxtEditCustomerType.Text = customer.CustomerType.ToString();
+            TxtEditYear.Text = customer.BirthDate.Year.ToString();
         }
 
         private void BtnSave_OnClick(object sender, RoutedEventArgs e)
@@ -100,10 +100,10 @@ namespace MemoryCacheLayer.WPF
 
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            if (customer.Id() == 0)
+            if (customer.Id == 0)
             {
                 int newId = _wrappedRepository.Insert(key, customer);
-                LoadCustomer(_wrappedRepository.Get(key).FirstOrDefault(c => c.Id() == newId));
+                LoadCustomer(_wrappedRepository.Get(key).FirstOrDefault(c => c.Id == newId));
             }
             else
                 _wrappedRepository.Update(key, customer);

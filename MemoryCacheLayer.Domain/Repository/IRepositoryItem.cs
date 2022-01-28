@@ -3,6 +3,6 @@
     public interface IRepositoryItem
     {
         int Id();
-        void Id(int value);
+        IRepositoryItem CloneWithId(int value);
     }
 }

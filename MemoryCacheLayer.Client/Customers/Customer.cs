@@ -2,50 +2,19 @@
 
 namespace MemoryCacheLayer.Client.Customers
 {
-    public struct Customer : IRepositoryItem
+    public record struct Customer(int Id, string FirstName, string LastName, string LocationName, DateTime BirthDate, CustomerType CustomerType) : IRepositoryItem
     {
-        private int _id;
-        private readonly string _firstName;
-        private readonly string _lastName;
-        private readonly string _locationName;
-        private readonly DateTime _birthDate;
-        private CustomerType _customerType;
+        int IRepositoryItem.Id()
+            => Id;
 
-        public Customer(int id, string firstName, string lastName, string locationName, DateTime birthDate, CustomerType customerType)
-        {
-            _id = id;
-            _firstName = firstName;
-            _lastName = lastName;
-            _locationName = locationName;
-            _birthDate = birthDate;
-            _customerType = customerType;
-        }
-
-        public int Id()
-            => _id;
-
-        void IRepositoryItem.Id(int value)
-            => _id = value;
-
-        public string FirstName()
-            => _firstName;
-
-        public string LastName()
-            => _lastName;
-
-        public string LocationName()
-            => _locationName;
-
-        public DateTime BirthDate()
-            => _birthDate;
-
-        public CustomerType CustomerType()
-            => _customerType;
+        IRepositoryItem IRepositoryItem.CloneWithId(int value)
+            => this with { Id = value };
 
 
-        public void CustomerType(CustomerType customerType)
-            => _customerType = customerType;
+        public Customer CloneWithCustomerType(CustomerType customerType)
+            => this with { CustomerType = customerType };
+
         public string DisplayName()
-            => $"{_firstName} - {_lastName}";
+            => $"{FirstName} - {LastName}";
     }
 }
